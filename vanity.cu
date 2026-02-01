@@ -71,9 +71,13 @@ unsigned long long int makeSeed() {
 #endif
     FILE *f = fopen("/dev/urandom", "rb");
     if (f) {
-        (void)fread(pseed, 1, sizeof(seed), f);
+        if (fread(pseed, 1, sizeof(seed), f) == sizeof(seed)) {
+            fclose(f);
+            return seed;
+        }
         fclose(f);
-    } else {
+    }
+    {
         std::random_device rd;
         for (unsigned int b = 0; b < sizeof(seed); b++)
             pseed[b] = (unsigned char)(rd() & 0xFF);
